@@ -1,14 +1,37 @@
 const express = require('express')
 const app = express()
-const PORT = 9010 //Puerto del servidor
+require('dotenv').config()
+const PORT = process.env.PORT || 9090 //Puerto del servidor
+
+//Dependencies and middlewares imports
+const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+
+//Importing routes
 const usuario = require('./routes/usuario') //Ruta de usuario
 const album = require('./routes/album') //Ruta de album
 const lamina = require('./routes/lamina') //Ruta de lamina
 const mesaDeIntercambio = require('./routes/mesaDeIntecambio') //Ruta de mesa de intercambio
+const cookieParser = require('cookie-parser')
+
+console.log(process.env.DATABASE)
+
+//Connecting to database.
+mongoose.connect(process.env.DATABASE, {
+    useNewUrlParser: true
+}).then(()=>{
+    console.log("DB is connected");
+}).catch((e)=>{
+    console.log("Unable to connect to database", e);
+})
 
 //Declarando Middlewares.
 /***Usar JSON parser */
-app.use(express.json())
+app.use(bodyParser.json())
+app.use(cookieParser())
+app.use(cors())
+
 
 
 
@@ -17,7 +40,6 @@ app.use('/usuario', usuario)
 app.use('/album', album)
 app.use('/lamina', lamina)
 app.use('/mesaDeIntercambio', mesaDeIntercambio)
-
 
 //Event Handler para la ruta /
 app.get('/', (req, res)=>{
