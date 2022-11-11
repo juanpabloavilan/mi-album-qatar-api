@@ -12,4 +12,15 @@ const laminaSchema = new mongoose.Schema({
     }
 })
 
+laminaSchema.methods = {
+    compare: function (a, b) {
+        if (a.adquirida == b.adquirida) {
+            return 0;
+        } else if (a.adquirida) {
+            return -1;
+        }
+        return 1;
+    }
+}
+
 module.exports = mongoose.model('Lamina', laminaSchema)

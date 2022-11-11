@@ -1,8 +1,12 @@
 const mongoose = require('mongoose')
 
 const albumSchema = new mongoose.Schema({
-    laminasMap: {
-        type: Map,
+    idPropietario: {
+        type: String,
+        require: true
+    },
+    laminas: {
+        type: Array,
         require: true
     }
 })

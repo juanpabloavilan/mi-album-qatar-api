@@ -25,11 +25,36 @@ router.post('/', async (req,res) => {
     }
 })
 
-router.patch('/:id', (req,res)=>{
-
+router.patch('/:id', getAlbum, (req,res)=>{
+    resAlbum = res.storedAlbum
+    try{
+        isLamina = lamina => lamina instanceof Lamina
+        if(!req.laminas.every(isLamina)){
+            return res.status(400)
+        }
+        Album.updateOne({ idPropietario: resAlbum.id },{ laminas: req.laminas})  //solo se puede cambiar la lista de mapas
+    }catch(err){
+        res.status(404).json({ message: err.message })
+    }
+    res.json(resAlbum.laminas)
 })
 
 router.delete('/:id', (req,res)=>{
     
 })
+
+async function getAlbum(req,res,next){
+    let storedAlbum
+    try{
+        storedAlbum = await Album.findById(req.params.id)
+        if(storedAlbum == null){
+            return res.status(404)
+        }
+    }catch(err){
+        return res.status(500).json({ message: err.message })
+    }
+    res.album = storedAlbum
+    next()
+}
+
 module.exports = router
