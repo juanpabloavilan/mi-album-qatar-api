@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const laminaSchema = new mongoose.Schema({    
-    adquirida: {
+    ownerId: {
         type: String,
-        required: true,
-        default: false
+        required: true
     },
     idRef: {
         type: String,
@@ -13,13 +12,8 @@ const laminaSchema = new mongoose.Schema({
 })
 
 laminaSchema.methods = {
-    compare: function (a, b) {
-        if (a.adquirida == b.adquirida) {
-            return 0;
-        } else if (a.adquirida) {
-            return -1;
-        }
-        return 1;
+    changeOwner: function (newOwnerId) {  //The owner id has to be validated first to be changed
+        this.idOwner = newOwnerId;
     }
 }
 

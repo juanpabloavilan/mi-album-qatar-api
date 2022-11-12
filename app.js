@@ -10,8 +10,7 @@ const cors = require('cors')
 
 //Importing routes
 const usuario = require('./routes/usuario') //Ruta de usuario
-const album = require('./routes/albumRoute') //Ruta de album
-const lamina = require('./routes/laminaRoute') //Ruta de lamina
+const album = require('./routes/albumRoute') //Ruta de lamina
 const mesaDeIntercambio = require('./routes/mesaDeIntecambio') //Ruta de mesa de intercambio
 const cookieParser = require('cookie-parser')
 
@@ -38,7 +37,6 @@ app.use(cors())
 //Definiendo las rutas en la aplicación
 app.use('/usuario', usuario)
 app.use('/album', album)
-app.use('/lamina', lamina)
 app.use('/mesaDeIntercambio', mesaDeIntercambio)
 
 //Event Handler para la ruta /
