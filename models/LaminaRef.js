@@ -14,7 +14,7 @@ const laminaRefSchema = new mongoose.Schema({
         required: true,
         default: 'no_img'
     },
-    cantidad: {
+    numero: {
         type: Number,
         required: true,
         default: 0

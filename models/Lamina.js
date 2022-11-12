@@ -8,6 +8,11 @@ const laminaSchema = new mongoose.Schema({
     idRef: {
         type: String,
         required: true
+    },
+    cantidad: {
+        type: Number,
+        required: true,
+        default: 1
     }
 })
 
