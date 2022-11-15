@@ -29,8 +29,10 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) =>{
-    const {username, password} = req.body
-    User.findOne({username},(err, user)=>{
+    console.log(req.body)
+    const {email, password} = req.body
+    console.log(email, password)
+    User.findOne({email},(err, user)=>{
         if(err || !user){
             return res.status(400).json({
                 error: "User not found"

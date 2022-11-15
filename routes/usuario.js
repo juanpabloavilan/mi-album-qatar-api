@@ -13,7 +13,6 @@ router.get('/', (req, res)=>{
 //Iniciar sesión
 router.post('/signin',[
     check("email", "email should be valid").isEmail(),
-    check("username", "username should have at least 4 characters").isLength({min:4}),
     check("password", "username should have at least 4 characters").isLength({min:4}) 
 ] ,signin)
 
