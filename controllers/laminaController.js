@@ -1,113 +1,93 @@
 const Lamina = require('../models/Lamina')
-const Referecia = require('../models/LaminaRef')
-//
-//
-//
-// &---- SERVICE FUNCTIONS ----&
-exports.getAllLaminas = (req, res) => {
-    try {
-        getAllSchemaLaminas.then((laminas) => {
-            res.status(200).json(laminas)
-        })
-    } catch (err) {
-        return res.status(500).json({ message: err.message })
-    }
-}
 
+//LAMINA: ENLACE DE UN USUARIO CON UNA REFERENCIA DE LAMINA
 exports.getLamina = (req, res) => {
-    let lamina
-    try {
-        getLamina(req.params.id).then((lamina) => {
-            res.json(lamina)
-        })
-        if (lamina == null) {
-            return res.status(404) //status 404: not found
-        }
-    } catch (err) {
-        return res.status(500).json({ message: err.message })
+    id = req.params.id
+    if (!assertObjectId(id)) { // unvalid ObjectId, bad query.
+        res.status(400).json({ message: "Invalid id request" })
+        return
     }
-    res.json(lamina)
+    // valid ObjectId, proceed with `findById` call
+    Lamina.findById(id, (err, lamina) => {
+        err ?
+            res.status(500).json({ message: err.message }) :
+            res.json(lamina);
+    });
 }
 
 exports.addLamina = (req, res) => {
-    const reqLamina = new Lamina({
-        adquirida: req.body.adquirida,
-        idRef: req.body.idRef
-    })
-    try {
-        saveSchemaLamina(reqLamina).then((savedLamina) => {
-            res.status(201).json(savedLamina)
-        })
-    } catch (err) {
-        res.status(400).json({ message: err.message }) //400 status: user input error
+    if (!res.ref) {
+        return res.status(400).json({ err: "Reference doesnt exist" })
+    } else if (res.lamina) {
+        return res.status(400).json({ err: "You already have this lamina" })
     }
+    const reqLamina = new Lamina(req.body);
+    reqLamina.save((err, lamina) => {
+        if (err) {
+            res.status(400).json({ err: err.message })
+            return
+        }
+        res.status(201).json(lamina)
+    });
 }
+
 
 exports.deleteLamina = (req, res) => {
-    if (getLamina != null) {
-        deleteSchemaLamina(req.id).then((deletedId) => {
-            if(typeof deletedId === 'String'){
-                res.json(req.id + 'has been deleted successfully')
-            }
-        })
+    id = req.params.id
+    if (!assertObjectId(id)) {
+        res.status(400).json({ err: "Invalid id" })
+        return
     }
-    return res.status(404)
-}
-//
-//
-//
-// 
-//  &---- MIDDLEWARES ----&
-exports.validateRef = (req, res, next) => { //Sticker reference validator, creation of new Sticker(POST)
-    let reference
-    try {
-        let reference
-        findRefById(req.params.id).then((matchRef) => {
-            reference = matchRef
-        })
-        if (reference == null) {
-            return res.status(404) //status 404: not found
+    Lamina.findByIdAndDelete(id, (err, success) => {
+        if (err) {
+            res.status(500).json({ err: err.message })
         }
-    } catch (err) {
-        return res.status(500).json({ message: err.errMessage + '/ NO SE ENCONTRO LA REFERENCIA DE LA LAMINA' })
-    }
-    res.validRef = true
-    next()
-}
-//
-//
-//
-//
-// &---- Lamina Schema Methods ----&
-getAllSchemaLaminas = new Promise((resolve) => {
-    const laminas = Lamina.find()
-    resolve(laminas)
-})
-
-getLamina(id) {
-    return new Promise((resolve) => {
-        const lamina = Lamina.findById(id)
-        resolve(lamina)
+        success == null ? res.status(404).json({ error: 'invalid id' }) :
+            res.json({ msg: id + ' deleted' })
     })
 }
 
-function saveSchemaLamina(newLamina) {
-    return new Promise((resolve) => {
-        resolve(newLamina.save())
+exports.increaseLaminaQty = (req, res) => {
+    id = req.params.id
+    Lamina.findByIdAndUpdate(id, { $inc: { cantidad: 1 } },{ new: true }, (err, success) => {
+        if (err) {
+            res.status(500).json({ err: err.message })
+            return
+        }
+        updateResult = success == null ?
+            res.status(404).json({ error: 'invalid id' }) :
+            res.json(success)
     })
 }
 
-function deleteSchemaLamina(id) {
-    return new Promise((resolve) => {
-        Lamina.deleteOne({ id: res.id })
-        resolve(id)
+exports.decreaseLaminaQty = (req, res) => {
+    id = req.params.id
+    Lamina.findByIdAndUpdate(id, { $inc: { cantidad: -1 } }, {new: true} , (err, success) => {
+        if (err) {
+            res.status(500).json({ err: err.message })
+            return
+        } else if(success == null){
+            res.status(404).json({ error: 'invalid id' })
+            return
+        } 
+        success.cantidad <= 0 ? this.deleteLamina(req, res) : res.json(success)
     })
 }
 
-// &---- Referencia Schema Methods ----&
-async function findRefById(id) {
-    return new Promise((resolve) => {
-        resolve(Referecia.findById(id))
+exports.validateNewLamina = (req, res, next) => {
+    reqRef = req.body.idRef
+    reqOwner = req.body.ownerId
+    Lamina.findOne({ idRef: reqRef, ownerId: reqOwner }, (err, userLamina) => {
+        if (err) {
+            res.err = err.message
+        }
+        res.lamina = userLamina
+        next()
     })
 }
 
+
+//Assertions
+function assertObjectId(id) {
+    return id.match(/^[0-9a-fA-F]{24}$/) != null
+}
