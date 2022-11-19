@@ -1,5 +1,6 @@
 const { findOneAndUpdate } = require('moongose/models/user_model')
 const Lamina = require('../models/Lamina')
+const { find } = require('../models/LaminaRef')
 
 //LAMINA: ENLACE DE UN USUARIO CON UNA REFERENCIA DE LAMINA
 exports.getLamina = (req, res) => {
@@ -20,6 +21,7 @@ exports.addLamina = (req, res) => {
     if (!res.ref) {  //Validate Ref Middleware
         return res.status(400).json({ err: "Reference doesnt exist" })
     } else if (res.lamina) { //Validate Lamina Middleware
+        console.log(res.lamina)
         return res.status(400).json({ err: "You already have this lamina" })
     }
     const reqLamina = new Lamina(req.body);
@@ -79,7 +81,7 @@ exports.decreaseLaminaQty = (req, res) => {
 exports.validateNewLamina = (req, res, next) => {
     reqRef = req.body.idRef
     reqOwner = req.body.ownerId
-    findOne({ idRef: reqRef, ownerId: reqOwner }, (err, userLamina) => {
+    Lamina.findOne({ idRef: reqRef, ownerId: reqOwner }, (err, userLamina) => {
         if (err) {
             res.err = err.message
         }
