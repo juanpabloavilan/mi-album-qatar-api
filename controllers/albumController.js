@@ -37,6 +37,19 @@ exports.getAlbumLamina = (req,res) => {
     });
 }
 
+exports.getLaminasByEquipo = (req,res) => {
+    console.log(req.params)
+    let equipo = req.params.equipo
+    Referencia.find({equipo: equipo},(err, laminas) => {
+        if(err){
+            return res.status(500).json(laminas)
+        }
+        return laminas == null ?
+            res.status(404).json({message: 'Invalid team'}) :
+            res.status(200).json(laminas)
+    })
+}
+
 //MIDDLEWARE
 exports.validateRef = (req, res, next) => { //Sticker reference validator, creation of new Sticker(POST)
     id = req.body.idRef

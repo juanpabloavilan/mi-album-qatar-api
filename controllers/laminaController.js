@@ -8,7 +8,7 @@ exports.getLamina = (req, res) => {
         return
     }
     // valid ObjectId, proceed with `findById` call
-    Lamina.findById(id, (err, lamina) => {
+    findById(id, (err, lamina) => {
         err ?
             res.status(500).json({ message: err.message }) :
             res.json(lamina);
@@ -16,9 +16,9 @@ exports.getLamina = (req, res) => {
 }
 
 exports.addLamina = (req, res) => {
-    if (!res.ref) {
+    if (!res.ref) {  //Validate Ref Middleware
         return res.status(400).json({ err: "Reference doesnt exist" })
-    } else if (res.lamina) {
+    } else if (res.lamina) { //Validate Lamina Middleware
         return res.status(400).json({ err: "You already have this lamina" })
     }
     const reqLamina = new Lamina(req.body);
@@ -32,13 +32,13 @@ exports.addLamina = (req, res) => {
 }
 
 
-exports.deleteLamina = (req, res) => {
+exports.deleteLamina= (req, res) => {
     id = req.params.id
     if (!assertObjectId(id)) {
         res.status(400).json({ err: "Invalid id" })
         return
     }
-    Lamina.findByIdAndDelete(id, (err, success) => {
+    findByIdAndDelete(id, (err, success) => {
         if (err) {
             res.status(500).json({ err: err.message })
         }
@@ -49,7 +49,7 @@ exports.deleteLamina = (req, res) => {
 
 exports.increaseLaminaQty = (req, res) => {
     id = req.params.id
-    Lamina.findByIdAndUpdate(id, { $inc: { cantidad: 1 } },{ new: true }, (err, success) => {
+    findByIdAndUpdate(id, { $inc: { cantidad: 1 } },{ new: true }, (err, success) => {
         if (err) {
             res.status(500).json({ err: err.message })
             return
@@ -62,7 +62,7 @@ exports.increaseLaminaQty = (req, res) => {
 
 exports.decreaseLaminaQty = (req, res) => {
     id = req.params.id
-    Lamina.findByIdAndUpdate(id, { $inc: { cantidad: -1 } }, {new: true} , (err, success) => {
+    findByIdAndUpdate(id, { $inc: { cantidad: -1 } }, {new: true} , (err, success) => {
         if (err) {
             res.status(500).json({ err: err.message })
             return
@@ -77,7 +77,7 @@ exports.decreaseLaminaQty = (req, res) => {
 exports.validateNewLamina = (req, res, next) => {
     reqRef = req.body.idRef
     reqOwner = req.body.ownerId
-    Lamina.findOne({ idRef: reqRef, ownerId: reqOwner }, (err, userLamina) => {
+    findOne({ idRef: reqRef, ownerId: reqOwner }, (err, userLamina) => {
         if (err) {
             res.err = err.message
         }
@@ -85,7 +85,6 @@ exports.validateNewLamina = (req, res, next) => {
         next()
     })
 }
-
 
 //Assertions
 function assertObjectId(id) {
