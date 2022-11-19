@@ -1,19 +1,23 @@
 const mongoose = require('mongoose');
 
 const laminaRefSchema = new mongoose.Schema({    
-    cantidad: {
-        type: Number,
-        required: true,
-        default: 0
-    },
-    nombreJugador: {
+    equipo: {
         type: String,
         required: true
     },
-    imgData: {
+    nombre: {
+        type: String,
+        required: true
+    },
+    imgUrl: {
         type: String,
         required: true,
         default: 'no_img'
+    },
+    numero: {
+        type: Number,
+        required: true,
+        default: 0
     }
 })
 

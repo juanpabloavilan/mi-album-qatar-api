@@ -1,16 +1,16 @@
 const express = require('express')
 const router = express.Router()
-const Lamina = require('../models/Lamina')
-const {getAllLaminas, getLamina, addLamina, validateRef, deleteLamina} = require('../controllers/laminaController')
-
-router.get('/', getAllLaminas)
+const {validateRef} = require('../controllers/albumController')
+const {getLamina,addLamina,deleteLamina, validateNewLamina, increaseLaminaQty, decreaseLaminaQty} = require('../controllers/laminaController')
 
 router.get('/:id', getLamina)
 
-router.post('/', validateRef, addLamina)
+router.post('/', validateRef, validateNewLamina, addLamina)
 
-// router.patch('/:id', async (req,res) => {})
+router.delete('/del/:id', deleteLamina)
 
-router.delete('/:id', deleteLamina)
+router.patch('/increase=:id',increaseLaminaQty)
+
+router.patch('/decrease=:id',decreaseLaminaQty)
 
 module.exports = router

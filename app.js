@@ -10,9 +10,9 @@ const cors = require('cors')
 
 //Importing routes
 const usuario = require('./routes/usuario') //Ruta de usuario
-const album = require('./routes/albumRoute') //Ruta de album
-const lamina = require('./routes/laminaRoute') //Ruta de lamina
-const mesaDeIntercambio = require('./routes/mesaDeIntecambio') //Ruta de mesa de intercambio
+const album = require('./routes/albumRoute') //Ruta de lamina
+const mesaDeIntercambio = require('./routes/mesaDeIntercambio') //Ruta de mesa de intercambio
+const lamina = require('./routes/laminaRoute')
 const cookieParser = require('cookie-parser')
 
 console.log(process.env.DATABASE)
