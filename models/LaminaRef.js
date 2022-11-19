@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const laminaRefSchema = new mongoose.Schema({    
     equipo: {
         type: String,
-        required: true
+        required: false
     },
     nombre: {
         type: String,
@@ -18,6 +18,10 @@ const laminaRefSchema = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0
+    },
+    tipo: {
+        type: String,
+        required: true
     }
 })
 

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const laminaSchema = new mongoose.Schema({    
     ownerId: {
@@ -15,11 +15,5 @@ const laminaSchema = new mongoose.Schema({
         default: 1
     }
 })
-
-laminaSchema.methods = {
-    changeOwner: function (newOwnerId) {  //The owner id has to be validated first to be changed
-        this.idOwner = newOwnerId;
-    }
-}
 
 module.exports = mongoose.model('Lamina', laminaSchema)
