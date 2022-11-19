@@ -38,15 +38,26 @@ exports.getAlbumLamina = (req,res) => {
 }
 
 exports.getLaminasByEquipo = (req,res) => {
-    console.log(req.params)
     let equipo = req.params.equipo
     Referencia.find({equipo: equipo},(err, laminas) => {
         if(err){
-            return res.status(500).json(laminas)
+            return res.status(500).json({ message: err.message })
         }
         return laminas == null ?
-            res.status(404).json({message: 'Invalid team'}) :
+            res.status(404).json({message: 'Not found'}) :
             res.status(200).json(laminas)
+    })
+}
+
+exports.getLaminaByNumero = (req,res) => {
+    let num = req.body.numero
+    Referencia.findOne({numero: num},(err,albumLamina) => {
+        if(err){
+            return res.status(500).json({ message: err.message })
+        }
+        return albumLamina == null ?
+            res.status(404).json({message: 'Not found'}) :
+            res.status(200).json(albumLamina)
     })
 }
 

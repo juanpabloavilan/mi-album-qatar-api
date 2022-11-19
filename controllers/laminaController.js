@@ -1,3 +1,4 @@
+const { findOneAndUpdate } = require('moongose/models/user_model')
 const Lamina = require('../models/Lamina')
 
 //LAMINA: ENLACE DE UN USUARIO CON UNA REFERENCIA DE LAMINA
@@ -73,6 +74,7 @@ exports.decreaseLaminaQty = (req, res) => {
         success.cantidad <= 0 ? this.deleteLamina(req, res) : res.json(success)
     })
 }
+
 
 exports.validateNewLamina = (req, res, next) => {
     reqRef = req.body.idRef
