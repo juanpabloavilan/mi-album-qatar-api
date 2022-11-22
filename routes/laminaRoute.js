@@ -9,8 +9,8 @@ router.post('/', validateRef, validateNewLamina, addLamina)
 
 router.delete('/del/:id', deleteLamina)
 
-router.patch('/increase=:id',increaseLaminaQty)
+router.patch('/increase/:numero/:ownerId',increaseLaminaQty)
 
-router.patch('/decrease=:id',decreaseLaminaQty)
+router.patch('/decrease/:numero/:ownerId',decreaseLaminaQty)
 
 module.exports = router

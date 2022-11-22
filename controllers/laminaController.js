@@ -1,4 +1,4 @@
-const { findOneAndUpdate } = require('moongose/models/user_model')
+//const { findOneAndUpdate } = require('moongose/models/user_model')
 const Lamina = require('../models/Lamina')
 const { find } = require('../models/LaminaRef')
 
@@ -22,9 +22,11 @@ exports.addLamina = (req, res) => {
         return res.status(400).json({ err: "Reference doesnt exist" })
     } else if (res.lamina) { //Validate Lamina Middleware
         console.log(res.lamina)
+        res.in
         return res.status(400).json({ err: "You already have this lamina" })
     }
     const reqLamina = new Lamina(req.body);
+    reqLamina.cantidad = 1
     reqLamina.save((err, lamina) => {
         if (err) {
             res.status(400).json({ err: err.message })
@@ -50,38 +52,66 @@ exports.deleteLamina= (req, res) => {
     })
 }
 
-exports.increaseLaminaQty = (req, res) => {
-    id = req.params.id
-    findByIdAndUpdate(id, { $inc: { cantidad: 1 } },{ new: true }, (err, success) => {
-        if (err) {
-            res.status(500).json({ err: err.message })
-            return
-        }
-        updateResult = success == null ?
-            res.status(404).json({ error: 'invalid id' }) :
-            res.json(success)
-    })
+exports.increaseLaminaQty = async(req, res) => {
+    const numero = req.params.numero
+    const ownerId = req.params.ownerId
+    
+    if (!numero || !ownerId) return res.status(400).json({error: "Parameters not included"})
+    try{
+        //Find lamina 
+       
+        let lamina = await Lamina.findOne({numero, ownerId})
+        lamina.cantidad += 1
+        lamina = await lamina.save()
+
+        const laminaRefInfo = await lamina.findLaminaRefInfo()
+        
+        return res.json({
+            laminaRefInfo,
+            lamina
+        })
+
+    }catch(e){
+        return res.status(400).json({
+            error: "Lamina no encontrada"
+        })
+    }
+    
 }
 
-exports.decreaseLaminaQty = (req, res) => {
-    id = req.params.id
-    findByIdAndUpdate(id, { $inc: { cantidad: -1 } }, {new: true} , (err, success) => {
-        if (err) {
-            res.status(500).json({ err: err.message })
-            return
-        } else if(success == null){
-            res.status(404).json({ error: 'invalid id' })
-            return
-        } 
-        success.cantidad <= 0 ? this.deleteLamina(req, res) : res.json(success)
-    })
+exports.decreaseLaminaQty = async(req, res) => {
+    const numero = req.params.numero
+    const ownerId = req.params.ownerId
+    
+    if (!numero || !ownerId) return res.status(400).json({error: "Parameters not included"})
+    try{
+        //Find lamina 
+        let lamina = await Lamina.findOne({numero, ownerId})
+        if(lamina.cantidad <= 1) {
+            return res.status(400).json({error: "Cannot decrease value of 1"})
+        }
+        lamina.cantidad -= 1
+        lamina = await lamina.save()
+
+        const laminaRefInfo = await lamina.findLaminaRefInfo()
+        
+        return res.json({
+            laminaRefInfo,
+            lamina
+        })
+
+    }catch(e){
+        return res.status(404).json({
+            error: "Lamina not found"
+        })
+    }
 }
 
 
 exports.validateNewLamina = (req, res, next) => {
-    reqRef = req.body.idRef
+    reqNumero = req.body.numero
     reqOwner = req.body.ownerId
-    Lamina.findOne({ idRef: reqRef, ownerId: reqOwner }, (err, userLamina) => {
+    Lamina.findOne({ numero: reqNumero, ownerId: reqOwner }, (err, userLamina) => {
         if (err) {
             res.err = err.message
         }

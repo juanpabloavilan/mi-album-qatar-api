@@ -16,6 +16,7 @@ const laminaRefSchema = new mongoose.Schema({
     },
     numero: {
         type: Number,
+        unique: true,
         required: true,
         default: 0
     },

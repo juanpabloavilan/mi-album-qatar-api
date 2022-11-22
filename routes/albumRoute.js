@@ -10,7 +10,7 @@ router.get('/:user_id', getUserLaminas)
 
 router.get('/ref_laminas/:ref_id', getLaminasOfRef)
 
-router.get('/equipo/:equipo', getLaminasByEquipo)
+router.get('/equipo/:equipo/:ownerId', getLaminasByEquipo)
 
 router.get('/lamina/findByNum', getLaminaByNumero)
 

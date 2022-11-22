@@ -37,9 +37,40 @@ exports.getAlbumLamina = (req, res) => {
             res.status(200).json(albumLamina);
     });
 }
+exports.getLaminasByEquipo = async(req, res )=> {
+    const equipo = req.params.equipo
+    const ownerId = req.params.ownerId
 
-exports.getLaminasByEquipo = (req, res) => {
+    if (!equipo || !ownerId) return res.status(400).json({error: 'no parameters provided'})
+    
+    try {
+        const referecias = await Referencia.find({equipo}) 
+        const laminas = await Promise.all(
+            referecias.map(async (laminaRef) =>{
+                const numero = laminaRef.numero
+                const lamina = await Lamina.findOne({numero, ownerId}, 'cantidad')
+                if (!lamina){
+                    return {
+                        laminaRef,
+                        cantidad: 0
+                    }
+                }
+                return {
+                    laminaRef,
+                    cantidad: lamina.cantidad
+                }
+            }
+        ))
+
+        res.json(laminas)
+    } catch (error) {
+        
+    }
+}
+/*
+exports.getLaminasByEquipo = (req, res) => { //Arreglar
     let equipo = req.params.equipo
+    let ownerId = req.params.ownerId
     Referencia.find({ equipo: equipo }, (err, laminas) => {
         if (err) {
             return res.status(500).json({ message: err.message })
@@ -48,7 +79,7 @@ exports.getLaminasByEquipo = (req, res) => {
             res.status(404).json({ message: 'Not found' });
         }
         lamina_promises = laminas.map((refLamina) => {
-            let laminaPromise = Lamina.findOne({idRef: refLamina.id}).exec()
+            let laminaPromise = Lamina.findOne({idRef: refLamina.id, ownerId: ownerId}).exec()
             return user = laminaPromise.then(userLamina => {
                 quantity = userLamina == null ? 0 : userLamina.cantidad
                 return {
@@ -61,7 +92,7 @@ exports.getLaminasByEquipo = (req, res) => {
             res.status(200).json(result)
         })
     })
-}
+}*/
 
 exports.getLaminaByNumero = (req, res) => {
     let num = req.body.numero
@@ -77,8 +108,8 @@ exports.getLaminaByNumero = (req, res) => {
 
 //MIDDLEWARE
 exports.validateRef = (req, res, next) => { //Sticker reference validator, creation of new Sticker(POST)
-    id = req.body.idRef
-    Referencia.findById(id, (err, ref) => {
+    const reqNumero = req.body.numero
+    Referencia.findOne({numero: reqNumero}, (err, ref) => {
         if (err) {
             res.err = err.message
         }
