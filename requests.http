@@ -1,0 +1,14 @@
+GET http://localhost:9090/album/
+
+###
+
+POST
+ 
+Content-Type: "application/json"
+{
+
+}
+
+###
+
+GET http://localhost:9090/album/equipo/Especiales/6374c78f8ae980334a7c3197
