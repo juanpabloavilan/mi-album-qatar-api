@@ -37,19 +37,19 @@ exports.getAlbumLamina = (req, res) => {
             res.status(200).json(albumLamina);
     });
 }
-exports.getLaminasByEquipo = async(req, res )=> {
+exports.getLaminasByEquipo = async (req, res) => {
     const equipo = req.params.equipo
     const ownerId = req.params.ownerId
 
-    if (!equipo || !ownerId) return res.status(400).json({error: 'no parameters provided'})
-    
+    if (!equipo || !ownerId) return res.status(400).json({ error: 'no parameters provided' })
+
     try {
-        const referecias = await Referencia.find({equipo}) 
+        const referecias = await Referencia.find({ equipo })
         const laminas = await Promise.all(
-            referecias.map(async (laminaRef) =>{
+            referecias.map(async (laminaRef) => {
                 const numero = laminaRef.numero
-                const lamina = await Lamina.findOne({numero, ownerId}, 'cantidad')
-                if (!lamina){
+                const lamina = await Lamina.findOne({ numero, ownerId }, 'cantidad')
+                if (!lamina) {
                     return {
                         laminaRef,
                         cantidad: 0
@@ -60,13 +60,43 @@ exports.getLaminasByEquipo = async(req, res )=> {
                     cantidad: lamina.cantidad
                 }
             }
-        ))
+            ))
 
         res.json(laminas)
     } catch (error) {
-        
+
     }
 }
+
+exports.getLaminasRestantesByEquipo = async (req, res) => {
+    const equipo = req.params.equipo
+    const id = req.params.currentUserId
+
+    if (!equipo || !ownerId) return res.status(400).json({ error: 'no parameters provided' })
+
+    try {
+        const referecias = await Referencia.find({ equipo })
+        const laminas = await Promise.all(
+            referecias.map(async (laminaRef) => {
+                const numero = laminaRef.numero
+                const hasThisLamina = await Lamina.exists({
+                    numero,
+                    ownerId: id,
+                });
+                return {
+                    laminaRef,
+                    hasThisLamina: Boolean(hasThisLamina)
+                }
+            }
+        ))
+        const unownedLaminas = laminas.filter(lamina => !lamina.hasThisLamina)
+        res.json(unownedLaminas)
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
+
 /*
 exports.getLaminasByEquipo = (req, res) => { //Arreglar
     let equipo = req.params.equipo
@@ -109,7 +139,7 @@ exports.getLaminaByNumero = (req, res) => {
 //MIDDLEWARE
 exports.validateRef = (req, res, next) => { //Sticker reference validator, creation of new Sticker(POST)
     const reqNumero = req.body.numero
-    Referencia.findOne({numero: reqNumero}, (err, ref) => {
+    Referencia.findOne({ numero: reqNumero }, (err, ref) => {
         if (err) {
             res.err = err.message
         }
