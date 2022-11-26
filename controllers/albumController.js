@@ -104,6 +104,7 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
             }
             ))
         const unownedLaminas = laminas.filter(lamina => !lamina.hasThisLamina)
+        const numUnowned = unownedLaminas.map((lamina) => lamina.numero);
         const mailData = {
             from: 'juandlh416@gmail.com',  // sender address
             to: owner.email,   // list of receivers
@@ -111,7 +112,7 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
             text: 'Hola! ' + owner.name,
             html: '<b>Hey there! </b>' +
                 '<br> This is our first message sent with Nodemailer<br/>' +
-                `<p>${unownedLaminas.map((lamina) => lamina.numero)}</p>`
+                `<p>${numUnowned}</p>`
         };
         transporter.sendMail(mailData, function (err, info) {
             if(err)
