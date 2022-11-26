@@ -111,7 +111,7 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
             text: 'Hola! ' + owner.name,
             html: '<b>Hey there! </b>' +
                 '<br> This is our first message sent with Nodemailer<br/>' +
-                `<p>${unownedLaminas}</p>`
+                `<p>${unownedLaminas.map((lamina) => lamina.numero)}</p>`
         };
         transporter.sendMail(mailData, function (err, info) {
             if(err)
