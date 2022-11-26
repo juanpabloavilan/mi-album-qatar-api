@@ -1,7 +1,8 @@
 const { exists } = require('../models/Lamina');
 const Lamina = require('../models/Lamina');
 const mailer = require('nodemailer')
-const Referencia = require('../models/LaminaRef')
+const Referencia = require('../models/LaminaRef');
+const Usuario = require('../models/Usuario');
 
 const transporter = mailer.createTransport({
     port: 465,               // true for 465, false for other ports
@@ -85,6 +86,8 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
 
     if (!equipo || !id) return res.status(400).json({ error: 'no parameters provided' })
 
+    let owner = await Usuario.findById(id);
+
     try {
         const referecias = await Referencia.find({ equipo })
         const laminas = await Promise.all(
@@ -102,14 +105,20 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
             ))
         const unownedLaminas = laminas.filter(lamina => !lamina.hasThisLamina)
         const mailData = {
-            from: 'youremail@gmail.com',  // sender address
-            to: 'myfriend@gmail.com',   // list of receivers
-            subject: 'Sending Email using Node.js',
-            text: 'That was easy!',
+            from: 'juandlh416@gmail.com',  // sender address
+            to: owner.email,   // list of receivers
+            subject: 'Laminas faltantes de ' + equipo,
+            text: 'Hola! ' + owner.name,
             html: '<b>Hey there! </b>' +
                 '<br> This is our first message sent with Nodemailer<br/>' +
                 `<p>${unownedLaminas}</p>`
         };
+        transporter.sendMail(mailData, function (err, info) {
+            if(err)
+              console.log(err)
+            else
+              console.log(info);
+         });
         res.json(unownedLaminas)
     } catch (error) {
         res.status(500).json({ error: error.message });
