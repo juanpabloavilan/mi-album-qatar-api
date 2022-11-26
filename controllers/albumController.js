@@ -72,7 +72,7 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
     const equipo = req.params.equipo
     const id = req.params.ownerId
 
-    if (!equipo || !ownerId) return res.status(400).json({ error: 'no parameters provided' })
+    if (!equipo || !id) return res.status(400).json({ error: 'no parameters provided' })
 
     try {
         const referecias = await Referencia.find({ equipo })

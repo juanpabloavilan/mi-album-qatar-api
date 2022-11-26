@@ -11,4 +11,4 @@ Content-Type: "application/json"
 
 ###
 
-GET htt
+GET http://54.211.207.115:3000/Qatar/63822fc24880aca04996cc1f
