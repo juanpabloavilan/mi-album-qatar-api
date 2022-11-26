@@ -104,8 +104,10 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
             }
             ))
         const unownedLaminas = laminas.filter(lamina => !lamina.hasThisLamina)
-        const numUnowned = unownedLaminas.map((lamina) => {return lamina.numero});
-    
+        const numUnowned = unownedLaminas.map((lamina) => {
+            return `<p>${lamina.numero}</p>` 
+        });
+        console.log(numUnowned)
         const mailData = {
             from: 'juandlh416@gmail.com',  // sender address
             to: owner.email,   // list of receivers
