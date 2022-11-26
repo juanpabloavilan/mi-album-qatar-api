@@ -3,7 +3,7 @@ const Lamina = require('../models/Lamina');
 const mailer = require('nodemailer')
 const Referencia = require('../models/LaminaRef')
 
-const transporter = nodemailer.createTransport({
+const transporter = mailer.createTransport({
     port: 465,               // true for 465, false for other ports
     host: "smtp.gmail.com",
     auth: {
