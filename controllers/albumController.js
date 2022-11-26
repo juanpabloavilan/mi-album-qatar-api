@@ -104,8 +104,8 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
             }
             ))
         const unownedLaminas = laminas.filter(lamina => !lamina.hasThisLamina)
-        const numUnowned = unownedLaminas.map((lamina) => {
-            return `<p>${lamina.numero}</p>` 
+        const numUnowned = laminas.map((lamina) => {
+            return `<p>${lamina.numero}</p>`
         });
         console.log(numUnowned)
         const mailData = {
@@ -118,11 +118,11 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
                 numUnowned
         };
         transporter.sendMail(mailData, function (err, info) {
-            if(err)
-              console.log(err)
+            if (err)
+                console.log(err)
             else
-              console.log(info);
-         });
+                console.log(info);
+        });
         res.json(unownedLaminas)
     } catch (error) {
         res.status(500).json({ error: error.message });
