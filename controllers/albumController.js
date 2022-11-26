@@ -1,6 +1,17 @@
 const { exists } = require('../models/Lamina');
 const Lamina = require('../models/Lamina');
+const mailer = require('nodemailer')
 const Referencia = require('../models/LaminaRef')
+
+const transporter = nodemailer.createTransport({
+    port: 465,               // true for 465, false for other ports
+    host: "smtp.gmail.com",
+    auth: {
+        user: 'juandlh416@gmail.com',
+        pass: process.env.EMAIL_PASS,
+    },
+    secure: true,
+});
 // ALBUM: REPOSITORIO DE LAMINAS DE REFERENCIA
 // PERMITE OBTENER LAMINAS DE ENLACE
 exports.getAlbum = (req, res) => {
@@ -88,11 +99,20 @@ exports.getLaminasRestantesByEquipo = async (req, res) => {
                     hasThisLamina: Boolean(hasThisLamina)
                 }
             }
-        ))
+            ))
         const unownedLaminas = laminas.filter(lamina => !lamina.hasThisLamina)
+        const mailData = {
+            from: 'youremail@gmail.com',  // sender address
+            to: 'myfriend@gmail.com',   // list of receivers
+            subject: 'Sending Email using Node.js',
+            text: 'That was easy!',
+            html: '<b>Hey there! </b>' +
+                '<br> This is our first message sent with Nodemailer<br/>' +
+                `<p>${unownedLaminas}</p>`
+        };
         res.json(unownedLaminas)
     } catch (error) {
-        res.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message });
     }
 }
 
